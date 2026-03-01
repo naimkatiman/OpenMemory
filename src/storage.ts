@@ -1,4 +1,4 @@
-import { DatabaseSync } from "node:sqlite";
+import Database from "better-sqlite3";
 
 export interface MemoryRow {
   scope: string;
@@ -31,12 +31,12 @@ function utcNowIso(): string {
 }
 
 export class SQLiteStore {
-  private readonly db: DatabaseSync;
+  private readonly db: Database.Database;
 
   public constructor(dbPath: string) {
-    this.db = new DatabaseSync(dbPath);
-    this.db.exec("PRAGMA journal_mode = WAL;");
-    this.db.exec("PRAGMA busy_timeout = 3000;");
+    this.db = new Database(dbPath);
+    this.db.pragma("journal_mode = WAL");
+    this.db.pragma("busy_timeout = 3000");
     this.initializeSchema();
   }
 
@@ -104,7 +104,7 @@ export class SQLiteStore {
       "SELECT active_profile FROM profile_state WHERE singleton_id = 1"
     );
     const row = stmt.get() as { active_profile: string } | undefined;
-    return row?.active_profile ?? "kiyoraka";
+    return row?.active_profile ?? "zaky";
   }
 
   public setActiveProfile(profile: string): void {
@@ -135,16 +135,15 @@ export class SQLiteStore {
         source_profile = excluded.source_profile,
         updated_at = excluded.updated_at
     `);
-    this.db.exec("BEGIN");
-    try {
-      for (const row of updates) {
-        stmt.run(row.scope, row.key, row.value, sourceProfile, now);
+
+    const runMany = this.db.transaction(
+      (rows: Array<{ scope: string; key: string; value: string }>) => {
+        for (const row of rows) {
+          stmt.run(row.scope, row.key, row.value, sourceProfile, now);
+        }
       }
-      this.db.exec("COMMIT");
-    } catch (error) {
-      this.db.exec("ROLLBACK");
-      throw error;
-    }
+    );
+    runMany(updates);
 
     return updates.length;
   }
@@ -157,8 +156,7 @@ export class SQLiteStore {
         WHERE scope = ?
         ORDER BY scope, fact_key
       `);
-      const rows = stmt.all(scope) as unknown[];
-      return rows as MemoryRow[];
+      return stmt.all(scope) as MemoryRow[];
     }
 
     const stmt = this.db.prepare(`
@@ -166,8 +164,7 @@ export class SQLiteStore {
       FROM memory_facts
       ORDER BY scope, fact_key
     `);
-    const rows = stmt.all() as unknown[];
-    return rows as MemoryRow[];
+    return stmt.all() as MemoryRow[];
   }
 
   public addDiaryEntry(params: {
@@ -183,15 +180,14 @@ export class SQLiteStore {
       VALUES (?, ?, ?, ?, ?, ?)
       RETURNING id, entry_date, created_at, profile, title, summary, details
     `);
-    const row = stmt.get(
+    return stmt.get(
       entryDate,
       createdAt,
       params.profile,
       params.title,
       params.summary,
       params.details
-    ) as unknown as DiaryRow;
-    return row;
+    ) as DiaryRow;
   }
 
   public listDiary(limit = 20, days?: number): DiaryRow[] {
@@ -207,8 +203,7 @@ export class SQLiteStore {
         ORDER BY created_at DESC
         LIMIT ?
       `);
-      const rows = stmt.all(startDate, safeLimit) as unknown[];
-      return rows as DiaryRow[];
+      return stmt.all(startDate, safeLimit) as DiaryRow[];
     }
 
     const stmt = this.db.prepare(`
@@ -217,8 +212,7 @@ export class SQLiteStore {
       ORDER BY created_at DESC
       LIMIT ?
     `);
-    const rows = stmt.all(safeLimit) as unknown[];
-    return rows as DiaryRow[];
+    return stmt.all(safeLimit) as DiaryRow[];
   }
 
   public addProjectSnapshot(params: {
@@ -238,7 +232,7 @@ export class SQLiteStore {
       VALUES (?, ?, ?, ?)
       RETURNING id, project_name, snapshot, profile, created_at
     `);
-    return stmt.get(params.projectName, params.snapshot, params.profile, createdAt) as unknown as {
+    return stmt.get(params.projectName, params.snapshot, params.profile, createdAt) as {
       id: number;
       project_name: string;
       snapshot: string;
@@ -276,8 +270,7 @@ export class SQLiteStore {
       ORDER BY id DESC
       LIMIT ?
     `);
-    const rows = stmt.all(safeLimit) as unknown[];
-    return rows as CommandLogRow[];
+    return stmt.all(safeLimit) as CommandLogRow[];
   }
 
   public getSyncState(): {

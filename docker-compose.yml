@@ -1,0 +1,24 @@
+services:
+  memorycore:
+    build: .
+    container_name: memorycore
+    restart: unless-stopped
+    ports:
+      - "${OPENCLAW_PORT:-8787}:8787"
+    environment:
+      - NODE_ENV=production
+      - OPENCLAW_HOST=0.0.0.0
+      - OPENCLAW_PORT=8787
+      - OPENCLAW_RUNTIME_DIR=/app/runtime
+      - OPENCLAW_DB_PATH=/app/runtime/openclaw.db
+      - OPENCLAW_API_KEY=${OPENCLAW_API_KEY}
+      - OPENCLAW_CORS_ORIGIN=${OPENCLAW_CORS_ORIGIN:-*}
+    volumes:
+      # Persist the SQLite DB across container restarts
+      - ./runtime:/app/runtime
+    healthcheck:
+      test: [ "CMD", "wget", "-qO-", "http://localhost:8787/health" ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
