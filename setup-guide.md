@@ -1,67 +1,72 @@
 # Setup Guide
-*Manual setup for Unified Memory-Diary Core*
+*Quick setup for AI MemoryCore*
 
-## Step 1: Set Names and Relationship
-Edit:
-- `main/main-memory.md`
-- `main/current-session.md`
-- `master-memory.md`
+## Step 1: Install and Start
 
-Replace:
-- `[AI_NAME]`
-- `[YOUR_NAME]`
-- `[RELATIONSHIP_STYLE]`
-
-Optional dual-assistant naming:
-- Native memory assistant: `Kiyoraka`
-- OpenClaw assistant: `Vanguard`
-
-## Step 2: Confirm Canonical Paths
-Use only these active files:
-- `main/main-memory.md`
-- `main/current-session.md`
-- `save-protocol.md`
-- `daily-diary/daily-diary-protocol.md`
-- `main/openclaw-capability-bridge.md`
-
-Deprecated stubs remain for compatibility but are not active sources.
-
-## Step 3: Configure Loader Prompt
-Add to your AI memory instruction:
-
-```markdown
-- Always load `master-memory.md` first.
-- On `Kiyoraka`, restore from `main/main-memory.md` and `main/current-session.md`.
-- `save` and `save diary` use the same merged save pipeline.
+```bash
+git clone https://github.com/Kiyoraka/Project-AI-MemoryCore.git
+cd Project-AI-MemoryCore
+npm install
+cp .env.example .env
+npm run dev
 ```
 
-## Step 4: Test Commands
-- `Kiyoraka`
-- `save`
-- `save diary`
-- `review diary`
-- `Load save-diary` (should return deprecation guidance)
-- `use kiyoraka`
-- `use vanguard` (or `use openclaw`)
-- `show capabilities`
-- `sync profiles`
+Server starts at `http://localhost:8787` with Swagger docs at `/docs`.
+
+## Step 2: Personalize Your Memory Files
+
+Edit the following files and replace placeholders:
+
+| Placeholder | Replace With | Example |
+|-------------|-------------|---------|
+| `[AI_NAME]` | Your AI assistant name | `Atlas` |
+| `[YOUR_NAME]` | Your name | `Alex` |
+| `[RELATIONSHIP_STYLE]` | How the AI should communicate | `Direct, concise, no fluff` |
+
+Files to update:
+- `master-memory.md`
+- `main/main-memory.md`
+- `main/current-session.md`
+
+## Step 3: Test Commands
+
+### Via CLI
+```bash
+npm run cli -- save --update preferences:language:TypeScript --summary "first save"
+npm run cli -- review --limit 5
+npm run cli -- switch assistant
+```
+
+### Via API
+```bash
+curl http://localhost:8787/health
+curl http://localhost:8787/v1/memory
+curl http://localhost:8787/v1/diary/recent
+```
+
+## Step 4: Connect via MCP (Optional)
+
+Build first: `npm run build`
+
+Add to your MCP config:
+```json
+{
+  "mcpServers": {
+    "memorycore": {
+      "command": "node",
+      "args": ["dist/src/mcp.js"],
+      "cwd": "/path/to/Project-AI-MemoryCore"
+    }
+  }
+}
+```
 
 ## Step 5: Verify Diary Layout
-Ensure directories exist:
+
+Ensure these directories exist:
 - `daily-diary/current/`
 - `daily-diary/archived/`
-- `daily-diary/archived/legacy/`
-
-Legacy numbered diary should be in:
-- `daily-diary/archived/legacy/Daily-Diary-001.md`
-
-## Final Notes
-- `save` is now memory + diary by default.
-- `save project` remains project-only.
-- Session file follows hard 500-line reset protocol.
-- `Kiyoraka` and `Vanguard` share the same memory-diary backend.
 
 ---
 
-Status: Active setup guide
-Version: Unified Memory-Diary Core v1.0
+Version: AI MemoryCore v1.0

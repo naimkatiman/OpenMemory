@@ -12,8 +12,8 @@ function createFixture(): {
   store: SQLiteStore;
   cleanup: () => void;
 } {
-  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "openclaw-ts-"));
-  const dbPath = path.join(tempDir, "test-openclaw.db");
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "memorycore-test-"));
+  const dbPath = path.join(tempDir, "test.db");
   const store = new SQLiteStore(dbPath);
   const service = new OpenClawService(store);
   return {
@@ -30,10 +30,26 @@ test("profile switch supports openclaw alias", () => {
   const fx = createFixture();
   try {
     const initial = fx.service.getProfiles();
-    assert.equal(initial.active_profile, "zaky");
+    assert.equal(initial.active_profile, "primary");
 
     const switched = fx.service.switchProfile("openclaw");
-    assert.equal(switched.active_profile, "fatin");
+    assert.equal(switched.active_profile, "assistant");
+  } finally {
+    fx.cleanup();
+  }
+});
+
+test("profile switch supports legacy aliases", () => {
+  const fx = createFixture();
+  try {
+    const switched = fx.service.switchProfile("zaky");
+    assert.equal(switched.active_profile, "primary");
+
+    const switched2 = fx.service.switchProfile("fatin");
+    assert.equal(switched2.active_profile, "assistant");
+
+    const switched3 = fx.service.switchProfile("kiyoraka");
+    assert.equal(switched3.active_profile, "primary");
   } finally {
     fx.cleanup();
   }
@@ -44,7 +60,7 @@ test("merged save updates memory and diary", () => {
   try {
     const result = fx.service.runCommand("save", {
       memory_updates: [
-        { scope: "identity", key: "assistant_name", value: "Fatin" },
+        { scope: "identity", key: "assistant_name", value: "Atlas" },
         { scope: "user", key: "preferred_tone", value: "concise" }
       ],
       diary: {
@@ -75,12 +91,12 @@ test("save diary alias uses merged save pipeline", () => {
   }
 });
 
-test("execute objective uses fatin openclaw flow", () => {
+test("execute objective uses assistant capability flow", () => {
   const fx = createFixture();
   try {
-    fx.service.switchProfile("fatin");
+    fx.service.switchProfile("assistant");
     const result = fx.service.executeObjective({ objective: "Ship API service" });
-    assert.equal(result.profile, "fatin");
+    assert.equal(result.profile, "assistant");
     assert.equal((result.plan as Array<{ phase: string }>).length, 4);
   } finally {
     fx.cleanup();
@@ -100,4 +116,3 @@ test("sync profiles reports shared state", () => {
     fx.cleanup();
   }
 });
-

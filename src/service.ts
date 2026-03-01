@@ -1,23 +1,26 @@
 import { SQLiteStore } from "./storage";
 
-type Profile = "zaky" | "fatin";
+type Profile = "primary" | "assistant";
 
 const PROFILE_ALIASES: Record<string, Profile> = {
-  zaky: "zaky",
-  fatin: "fatin",
-  kiyoraka: "zaky",
-  vanguard: "fatin",
-  openclaw: "fatin"
+  primary: "primary",
+  assistant: "assistant",
+  // Legacy aliases for backward compatibility
+  zaky: "primary",
+  kiyoraka: "primary",
+  fatin: "assistant",
+  vanguard: "assistant",
+  openclaw: "assistant"
 };
 
 const PROFILE_CAPABILITIES: Record<Profile, string[]> = {
-  zaky: [
+  primary: [
     "memory continuity",
     "relationship-aware communication",
     "adaptive support style",
     "merged save and diary persistence"
   ],
-  fatin: [
+  assistant: [
     "objective decomposition",
     "plan-execute-verify loop",
     "structured status reporting",
@@ -26,8 +29,8 @@ const PROFILE_CAPABILITIES: Record<Profile, string[]> = {
 };
 
 const PROFILE_DESCRIPTIONS: Record<Profile, string> = {
-  zaky: "Native Memory Profile",
-  fatin: "OpenClaw Capability Profile"
+  primary: "Primary Memory Profile",
+  assistant: "Assistant Capability Profile"
 };
 
 function nowLabel(): string {
@@ -37,14 +40,16 @@ function nowLabel(): string {
 function normalizeProfile(input: string): Profile {
   const normalized = PROFILE_ALIASES[input.trim().toLowerCase()];
   if (!normalized) {
-    throw new Error("Unsupported profile. Use zaky, fatin, or openclaw.");
+    throw new Error(
+      `Unsupported profile: "${input}". Available: ${Object.keys(PROFILE_ALIASES).join(", ")}`
+    );
   }
   return normalized;
 }
 
 /** Resolve whatever string is stored in DB (may be legacy alias) to a canonical Profile. */
 function resolveStoredProfile(raw: string): Profile {
-  return PROFILE_ALIASES[raw.trim().toLowerCase()] ?? "zaky";
+  return PROFILE_ALIASES[raw.trim().toLowerCase()] ?? "primary";
 }
 
 export class OpenClawService {
@@ -60,7 +65,7 @@ export class OpenClawService {
     }>;
   } {
     const active = resolveStoredProfile(this.store.getActiveProfile());
-    const profileOrder: Profile[] = ["zaky", "fatin"];
+    const profileOrder: Profile[] = ["primary", "assistant"];
     const profiles: Array<{
       name: Profile;
       description: string;
@@ -105,9 +110,9 @@ export class OpenClawService {
       description: PROFILE_DESCRIPTIONS[active],
       capabilities: PROFILE_CAPABILITIES[active],
       shared_backend: {
-        memory: "main/main-memory.md equivalent persisted in SQLite memory_facts",
-        session: "main/current-session.md equivalent persisted in runtime state",
-        diary: "daily diary equivalent persisted in SQLite diary_entries"
+        memory: "Persistent memory facts stored in SQLite",
+        session: "Session state persisted in runtime",
+        diary: "Daily diary entries persisted in SQLite"
       }
     };
   }
@@ -121,7 +126,7 @@ export class OpenClawService {
     return {
       synced: true,
       shared_state: this.store.getSyncState(),
-      profiles: ["zaky", "fatin"] as Profile[],
+      profiles: ["primary", "assistant"] as Profile[],
       message: "Both profiles are synchronized through one canonical SQLite backend."
     };
   }
@@ -231,7 +236,7 @@ export class OpenClawService {
     }
     const profile = resolveStoredProfile(this.store.getActiveProfile());
 
-    if (profile === "fatin") {
+    if (profile === "assistant") {
       return {
         objective,
         profile,
@@ -257,7 +262,7 @@ export class OpenClawService {
             output: "Verification checks passed for this run."
           }
         ],
-        summary: "OpenClaw execution loop completed with structured reporting."
+        summary: "Capability execution loop completed with structured reporting."
       };
     }
 
@@ -276,7 +281,7 @@ export class OpenClawService {
           output: "Prepared supportive next-step guidance."
         }
       ],
-      summary: "Native profile completed context-aware execution."
+      summary: "Primary profile completed context-aware execution."
     };
   }
 
@@ -295,7 +300,7 @@ export class OpenClawService {
       } else if (normalized === "sync profiles") {
         result = this.syncProfiles();
       } else if (normalized === "use openclaw" || normalized === "openclaw") {
-        result = this.switchProfile("openclaw");
+        result = this.switchProfile("assistant");
       } else if (normalized.startsWith("use ")) {
         const target = normalized.slice(4).trim();
         result = this.switchProfile(target);

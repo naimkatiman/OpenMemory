@@ -1,14 +1,31 @@
 {
-  "name": "openclaw-stack",
-  "version": "0.1.0",
-  "description": "TypeScript OpenClaw runtime stack with unified memory and diary persistence.",
-  "private": true,
+  "name": "ai-memorycore",
+  "version": "1.0.0",
+  "description": "Persistent memory server for AI assistants — SQLite-backed REST API, CLI, and MCP server.",
   "type": "commonjs",
+  "keywords": [
+    "ai-memory",
+    "llm",
+    "persistent-memory",
+    "mcp",
+    "mcp-server",
+    "sqlite",
+    "ai-assistant",
+    "memory-persistence",
+    "diary",
+    "typescript"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Kiyoraka/Project-AI-MemoryCore.git"
+  },
+  "license": "MIT",
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "start": "node dist/src/server.js",
     "dev": "tsx src/server.ts",
     "cli": "tsx src/cli.ts",
+    "mcp": "tsx src/mcp.ts",
     "test": "npm run build && node --test dist/tests/*.test.js",
     "clean": "if exist dist rmdir /s /q dist"
   },
@@ -16,6 +33,7 @@
     "@fastify/cors": "^11.2.0",
     "@fastify/swagger": "^9.7.0",
     "@fastify/swagger-ui": "^5.2.5",
+    "@modelcontextprotocol/sdk": "^1.27.1",
     "better-sqlite3": "^12.6.2",
     "fastify": "^5.6.2",
     "zod": "^4.3.6"
