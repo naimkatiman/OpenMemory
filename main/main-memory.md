@@ -1,5 +1,5 @@
 # Unified Main Memory - `[AI_NAME]`
-*Canonical identity and relationship memory for AI MemoryCore*
+*Canonical identity and relationship memory for OpenMemory*
 
 ## Canonical Status
 - Single source of truth: `main/main-memory.md`

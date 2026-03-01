@@ -48,4 +48,4 @@ Dual profile note:
 ---
 
 Status: Active
-Version: AI MemoryCore v1.0
+Version: OpenMemory v1.0

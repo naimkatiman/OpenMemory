@@ -16,7 +16,7 @@ const store = new SQLiteStore(settings.databasePath);
 const service = new OpenClawService(store);
 
 const server = new Server(
-    { name: "ai-memorycore", version: "1.0.0" },
+    { name: "openmemory", version: "1.0.0" },
     { capabilities: { tools: {} } }
 );
 
@@ -197,7 +197,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 async function main(): Promise<void> {
     const transport = new StdioServerTransport();
     await server.connect(transport);
-    console.error("AI MemoryCore MCP server running on stdio");
+    console.error("OpenMemory MCP server running on stdio");
 }
 
 void main();

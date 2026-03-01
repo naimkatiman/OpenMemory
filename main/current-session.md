@@ -1,5 +1,5 @@
 # Current Session Memory - RAM
-*Temporary working memory with recap continuity for AI MemoryCore*
+*Temporary working memory with recap continuity for OpenMemory*
 
 ## Session Status
 - **Current Session**: Active

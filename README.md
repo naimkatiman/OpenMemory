@@ -14,9 +14,9 @@ OpenMemory is an open-source memory server that lets AI assistants remember fact
 
 ---
 
-## Why MemoryCore?
+## Why OpenMemory?
 
-Every AI conversation starts from scratch. **MemoryCore fixes that.**
+Every AI conversation starts from scratch. **OpenMemory fixes that.**
 
 - 🔒 **Persistent memory** — facts, preferences, and context survive across sessions
 - 📓 **Automatic diary** — every `save` appends a timestamped diary entry
@@ -85,7 +85,7 @@ Add to your MCP config (e.g. `~/.cursor/mcp.json` or Claude Code settings):
     "memorycore": {
       "command": "node",
       "args": ["dist/src/mcp.js"],
-      "cwd": "/path/to/Project-AI-MemoryCore"
+      "cwd": "/path/to/OpenMemory"
     }
   }
 }

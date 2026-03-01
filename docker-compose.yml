@@ -1,7 +1,7 @@
 services:
-  memorycore:
+  openmemory:
     build: .
-    container_name: memorycore
+    container_name: openmemory
     restart: unless-stopped
     ports:
       - "${OPENCLAW_PORT:-8787}:8787"
