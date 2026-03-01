@@ -218,6 +218,10 @@ Full OpenAPI docs available at `http://localhost:8787/docs` when running.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines. Issues and PRs welcome!
 
+## Contributors
+
+- **[Kiyoraka](https://github.com/Kiyoraka)** (Afif Maahi) - Project creator and lead maintainer
+
 ## License
 
 [MIT](LICENSE) — use it, fork it, ship it.
