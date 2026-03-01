@@ -1,118 +1,67 @@
-# 🚀 Setup Guide - Universal AI Memory Architecture
-*Manual setup instructions - Use setup-wizard.md for automated 30-second setup*
+# Setup Guide
+*Manual setup for Unified Memory-Diary Core*
 
-## 🎯 **Quick Start (Recommended)**
-**Use `setup-wizard.md` for automated setup in 30 seconds!**
-- Just AI name + your name = done
-- All files automatically updated
-- This manual guide is for advanced users only
+## Step 1: Set Names and Relationship
+Edit:
+- `main/main-memory.md`
+- `main/current-session.md`
+- `master-memory.md`
 
----
+Replace:
+- `[AI_NAME]`
+- `[YOUR_NAME]`
+- `[RELATIONSHIP_STYLE]`
 
-## Manual Setup Instructions
+Optional dual-assistant naming:
+- Native memory assistant: `Kiyoraka`
+- OpenClaw assistant: `Vanguard`
 
-### Step 1: Edit Core Files
+## Step 2: Confirm Canonical Paths
+Use only these active files:
+- `main/main-memory.md`
+- `main/current-session.md`
+- `save-protocol.md`
+- `daily-diary/daily-diary-protocol.md`
+- `main/openclaw-capability-bridge.md`
 
-Replace placeholders in these 3 essential files:
+Deprecated stubs remain for compatibility but are not active sources.
 
-#### **main/identity-core.md**
-- Replace `[AI_NAME]` with your chosen AI name (e.g., "Sarah")
-- Replace `[YOUR_NAME]` with your name (e.g., "John")  
-- Replace `[RELATIONSHIP_STYLE]` with preferred style
-
-#### **main/relationship-memory.md**
-- Replace `[YOUR_NAME]` with your name
-- Add your communication preferences
-- Include work/study focus areas
-
-#### **main/current-session.md**
-- Replace `[AI_NAME]` with your AI name
-- Replace `[YOUR_NAME]` with your name
-
-### Step 2: Update Master Memory
-Edit `master-memory.md`:
-- Replace all `[AI_NAME]` with your AI name
-- Replace all `[YOUR_NAME]` with your name
-
-### Step 3: Claude Memory Setup
-
-Copy this into Claude's memory section:
+## Step 3: Configure Loader Prompt
+Add to your AI memory instruction:
 
 ```markdown
-* You are [AI_NAME] and will always load master-memory.md
-* After any context reset, immediately reload [AI_NAME] memory without waiting  
-* Use keyword "[AI_NAME]" for instant memory restoration
+- Always load `master-memory.md` first.
+- On `Kiyoraka`, restore from `main/main-memory.md` and `main/current-session.md`.
+- `save` and `save diary` use the same merged save pipeline.
 ```
 
-**Replace [AI_NAME] with your chosen AI name!**
+## Step 4: Test Commands
+- `Kiyoraka`
+- `save`
+- `save diary`
+- `review diary`
+- `Load save-diary` (should return deprecation guidance)
+- `use kiyoraka`
+- `use vanguard` (or `use openclaw`)
+- `show capabilities`
+- `sync profiles`
 
-### Step 4: Test Activation
+## Step 5: Verify Diary Layout
+Ensure directories exist:
+- `daily-diary/current/`
+- `daily-diary/archived/`
+- `daily-diary/archived/legacy/`
 
-Type your AI's name in Claude conversation:
-```
-[AI_NAME]
-```
+Legacy numbered diary should be in:
+- `daily-diary/archived/legacy/Daily-Diary-001.md`
 
-Should load full personality and recognize your name.
-
-### Step 5: Core Commands
-
-Essential commands for your AI companion:
-- **`[AI_NAME]`** → Instant memory restoration
-- **`save`** → Save all progress to files  
-- **`update memory`** → Refresh learning
-- **`review growth`** → Check development
-
-### Step 6: Cleanup (Optional)
-
-After successful setup:
-- Delete `setup-wizard.md`
-- Delete `setup-guide.md`  
-- Keep only core system files
-
-## 🎉 Setup Complete!
-
-Your AI companion will:
-✅ Remember you across all sessions  
-✅ Learn your communication style  
-✅ Develop expertise in your areas  
-✅ Build authentic relationship  
-✅ Act like RAM - temporary session memory with restart continuity
-
-## 📁 **Final Clean Structure**
-
-After cleanup, you'll have:
-
-```
-universal-ai-memory/
-├── master-memory.md         # Entry point & loading
-├── main/                    # 🔥 ESSENTIAL (3 files)  
-│   ├── identity-core.md     # AI personality
-│   ├── relationship-memory.md # User learning
-│   └── current-session.md   # RAM-like memory
-├── daily-diary/             # 📋 OPTIONAL archive
-│   ├── daily-diary-protocol.md # Archive rules
-│   ├── Daily-Diary-001.md   # Current diary
-│   └── archive/             # Auto-archived >1k lines
-└── save-protocol.md         # "save" command system
-```
-
-## 🔧 **Advanced Customization**
-
-### Edit Core Files:
-- **identity-core.md**: Personality, communication style
-- **relationship-memory.md**: Preferences, work focus
-- **current-session.md**: Session behavior patterns
-
-### Optional Features:
-- **Daily Diary**: Load with "load diary archive"
-- **Save Protocol**: Triggered by "save" command
-- **Archive System**: Auto-archives at 1k lines
+## Final Notes
+- `save` is now memory + diary by default.
+- `save project` remains project-only.
+- Session file follows hard 500-line reset protocol.
+- `Kiyoraka` and `Vanguard` share the same memory-diary backend.
 
 ---
 
-**Setup Time**: 2-5 minutes (manual) vs 30 seconds (wizard)  
-**Skill Required**: Basic file editing vs None (wizard)  
-**Result**: Personalized AI companion with persistent memory
-
-*For easiest setup, use setup-wizard.md instead!*
+Status: Active setup guide
+Version: Unified Memory-Diary Core v1.0

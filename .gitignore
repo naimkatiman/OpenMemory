@@ -1,6 +1,19 @@
 # Basic gitignore
 /[Tt]emp/
 *.exe
+*.pyc
+__pycache__/
+.venv/
+runtime/*.db
+node_modules/
+dist/
+*.tsbuildinfo
 
 # Claude Code settings
 .claude/settings.local.json
+
+# Dead Python artifact directory
+openclaw_stack/
+
+# Local environment config (never commit)
+.env

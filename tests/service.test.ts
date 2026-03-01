@@ -1,0 +1,103 @@
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import test from "node:test";
+
+import { OpenClawService } from "../src/service";
+import { SQLiteStore } from "../src/storage";
+
+function createFixture(): {
+  service: OpenClawService;
+  store: SQLiteStore;
+  cleanup: () => void;
+} {
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "openclaw-ts-"));
+  const dbPath = path.join(tempDir, "test-openclaw.db");
+  const store = new SQLiteStore(dbPath);
+  const service = new OpenClawService(store);
+  return {
+    service,
+    store,
+    cleanup: () => {
+      store.close();
+      fs.rmSync(tempDir, { recursive: true, force: true });
+    }
+  };
+}
+
+test("profile switch supports openclaw alias", () => {
+  const fx = createFixture();
+  try {
+    const initial = fx.service.getProfiles();
+    assert.equal(initial.active_profile, "zaky");
+
+    const switched = fx.service.switchProfile("openclaw");
+    assert.equal(switched.active_profile, "fatin");
+  } finally {
+    fx.cleanup();
+  }
+});
+
+test("merged save updates memory and diary", () => {
+  const fx = createFixture();
+  try {
+    const result = fx.service.runCommand("save", {
+      memory_updates: [
+        { scope: "identity", key: "assistant_name", value: "Fatin" },
+        { scope: "user", key: "preferred_tone", value: "concise" }
+      ],
+      diary: {
+        title: "Integration session",
+        summary: "Built TS stack",
+        details: "Service and API are implemented in TypeScript."
+      }
+    });
+    assert.equal(Number(result.memory_updates_applied), 2);
+    assert.equal((result.diary_entry as { title: string }).title, "Integration session");
+
+    const review = fx.service.runCommand("review diary", { limit: 10 });
+    assert.equal(Number(review.count), 1);
+  } finally {
+    fx.cleanup();
+  }
+});
+
+test("save diary alias uses merged save pipeline", () => {
+  const fx = createFixture();
+  try {
+    const result = fx.service.runCommand("save diary", {
+      diary: { title: "Alias check", summary: "Alias works", details: "" }
+    });
+    assert.equal((result.diary_entry as { title: string }).title, "Alias check");
+  } finally {
+    fx.cleanup();
+  }
+});
+
+test("execute objective uses fatin openclaw flow", () => {
+  const fx = createFixture();
+  try {
+    fx.service.switchProfile("fatin");
+    const result = fx.service.executeObjective({ objective: "Ship API service" });
+    assert.equal(result.profile, "fatin");
+    assert.equal((result.plan as Array<{ phase: string }>).length, 4);
+  } finally {
+    fx.cleanup();
+  }
+});
+
+test("sync profiles reports shared state", () => {
+  const fx = createFixture();
+  try {
+    fx.service.runCommand("save", { diary: { title: "sync" } });
+    const sync = fx.service.runCommand("sync profiles");
+    assert.equal(sync.synced, true);
+    assert.ok(
+      Number((sync.shared_state as { diary_entry_count: number }).diary_entry_count) >= 1
+    );
+  } finally {
+    fx.cleanup();
+  }
+});
+
