@@ -1,10 +1,10 @@
 <div align="center">
 
-# 🧠 AI MemoryCore
+# 🧠 OpenMemory
 
 **Give your AI assistant persistent memory that survives across sessions.**
 
-AI MemoryCore is an open-source memory server that lets AI assistants remember facts, keep diaries, and maintain context across conversations — backed by SQLite and exposed via REST API + MCP.
+OpenMemory is an open-source memory server that lets AI assistants remember facts, keep diaries, and maintain context across conversations — backed by SQLite and exposed via REST API + MCP.
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue?logo=typescript)](https://www.typescriptlang.org/)
@@ -30,8 +30,8 @@ Every AI conversation starts from scratch. **MemoryCore fixes that.**
 
 ```bash
 # Clone and install
-git clone https://github.com/Kiyoraka/Project-AI-MemoryCore.git
-cd Project-AI-MemoryCore
+git clone https://github.com/naimkatiman/OpenMemory.git
+cd OpenMemory
 npm install
 
 # Start the server
@@ -124,7 +124,7 @@ Available MCP tools:
 ### File Structure
 
 ```text
-Project-AI-MemoryCore/
+OpenMemory/
 ├── src/
 │   ├── server.ts          # Fastify server bootstrap
 │   ├── api.ts             # REST route definitions
@@ -221,6 +221,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines. Issues and PRs welcome!
 ## Contributors
 
 - **[Kiyoraka](https://github.com/Kiyoraka)** (Afif Maahi) - Project creator and lead maintainer
+- **[naimkatiman](https://github.com/naimkatiman)** (Naim Katiman) - Contributor
 
 ## License
 

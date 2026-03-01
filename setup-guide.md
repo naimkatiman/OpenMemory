@@ -1,11 +1,11 @@
 # Setup Guide
-*Quick setup for AI MemoryCore*
+*Quick setup for OpenMemory*
 
 ## Step 1: Install and Start
 
 ```bash
-git clone https://github.com/Kiyoraka/Project-AI-MemoryCore.git
-cd Project-AI-MemoryCore
+git clone https://github.com/naimkatiman/OpenMemory.git
+cd OpenMemory
 npm install
 cp .env.example .env
 npm run dev
@@ -55,7 +55,7 @@ Add to your MCP config:
     "memorycore": {
       "command": "node",
       "args": ["dist/src/mcp.js"],
-      "cwd": "/path/to/Project-AI-MemoryCore"
+      "cwd": "/path/to/OpenMemory"
     }
   }
 }
@@ -69,4 +69,4 @@ Ensure these directories exist:
 
 ---
 
-Version: AI MemoryCore v1.0
+Version: OpenMemory v1.0

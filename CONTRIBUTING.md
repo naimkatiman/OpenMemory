@@ -1,12 +1,12 @@
-# Contributing to AI MemoryCore
+# Contributing to OpenMemory
 
 Thanks for your interest! Here's how to contribute.
 
 ## Quick Setup
 
 ```bash
-git clone https://github.com/Kiyoraka/Project-AI-MemoryCore.git
-cd Project-AI-MemoryCore
+git clone https://github.com/naimkatiman/OpenMemory.git
+cd OpenMemory
 npm install
 npm run dev
 ```
