@@ -1,0 +1,78 @@
+services:
+  memorycore-central:
+    build: .
+    container_name: memorycore-central
+    restart: unless-stopped
+    ports:
+      - "8787:8787"
+    environment:
+      - NODE_ENV=production
+      - OPENCLAW_HOST=0.0.0.0
+      - OPENCLAW_PORT=8787
+      - OPENCLAW_INSTANCE=central
+      - OPENCLAW_RUNTIME_DIR=/app/runtime
+      - OPENCLAW_DB_PATH=/app/runtime/openclaw.db
+      - OPENCLAW_DEFAULT_SCOPE=preferences
+      - OPENCLAW_ALLOWED_SCOPE_PREFIXES=preferences,identity,facts
+      - OPENCLAW_API_KEY=${OPENCLAW_API_KEY}
+      - OPENCLAW_CORS_ORIGIN=${OPENCLAW_CORS_ORIGIN:-*}
+    volumes:
+      - ./runtime/central:/app/runtime
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8787/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  memorycore-project-a:
+    build: .
+    container_name: memorycore-project-a
+    restart: unless-stopped
+    ports:
+      - "8788:8787"
+    environment:
+      - NODE_ENV=production
+      - OPENCLAW_HOST=0.0.0.0
+      - OPENCLAW_PORT=8787
+      - OPENCLAW_INSTANCE=project-a
+      - OPENCLAW_RUNTIME_DIR=/app/runtime
+      - OPENCLAW_DB_PATH=/app/runtime/openclaw.db
+      - OPENCLAW_DEFAULT_SCOPE=project
+      - OPENCLAW_ALLOWED_SCOPE_PREFIXES=project,project-a
+      - OPENCLAW_API_KEY=${OPENCLAW_API_KEY}
+      - OPENCLAW_CORS_ORIGIN=${OPENCLAW_CORS_ORIGIN:-*}
+    volumes:
+      - ./runtime/project-a:/app/runtime
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8787/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  memorycore-project-b:
+    build: .
+    container_name: memorycore-project-b
+    restart: unless-stopped
+    ports:
+      - "8789:8787"
+    environment:
+      - NODE_ENV=production
+      - OPENCLAW_HOST=0.0.0.0
+      - OPENCLAW_PORT=8787
+      - OPENCLAW_INSTANCE=project-b
+      - OPENCLAW_RUNTIME_DIR=/app/runtime
+      - OPENCLAW_DB_PATH=/app/runtime/openclaw.db
+      - OPENCLAW_DEFAULT_SCOPE=project
+      - OPENCLAW_ALLOWED_SCOPE_PREFIXES=project,project-b
+      - OPENCLAW_API_KEY=${OPENCLAW_API_KEY}
+      - OPENCLAW_CORS_ORIGIN=${OPENCLAW_CORS_ORIGIN:-*}
+    volumes:
+      - ./runtime/project-b:/app/runtime
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8787/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s

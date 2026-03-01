@@ -91,7 +91,11 @@ function main(): void {
 
   const settings = getSettings();
   const store = new SQLiteStore(settings.databasePath);
-  const service = new OpenClawService(store);
+  const service = new OpenClawService(store, {
+    instanceName: settings.instanceName,
+    defaultScope: settings.defaultScope,
+    allowedScopePrefixes: settings.allowedScopePrefixes
+  });
 
   try {
     let result: unknown;
@@ -162,4 +166,3 @@ function main(): void {
 }
 
 main();
-

@@ -7,7 +7,19 @@ import test from "node:test";
 import { OpenClawService } from "../src/service";
 import { SQLiteStore } from "../src/storage";
 
+type FixtureOptions = ConstructorParameters<typeof OpenClawService>[1];
+
 function createFixture(): {
+  service: OpenClawService;
+  store: SQLiteStore;
+  cleanup: () => void;
+};
+function createFixture(options: FixtureOptions): {
+  service: OpenClawService;
+  store: SQLiteStore;
+  cleanup: () => void;
+};
+function createFixture(options: FixtureOptions = {}): {
   service: OpenClawService;
   store: SQLiteStore;
   cleanup: () => void;
@@ -15,7 +27,7 @@ function createFixture(): {
   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "memorycore-test-"));
   const dbPath = path.join(tempDir, "test.db");
   const store = new SQLiteStore(dbPath);
-  const service = new OpenClawService(store);
+  const service = new OpenClawService(store, options);
   return {
     service,
     store,
@@ -112,6 +124,41 @@ test("sync profiles reports shared state", () => {
     assert.ok(
       Number((sync.shared_state as { diary_entry_count: number }).diary_entry_count) >= 1
     );
+  } finally {
+    fx.cleanup();
+  }
+});
+
+test("scope policy blocks disallowed project updates", () => {
+  const fx = createFixture({
+    instanceName: "project-a",
+    defaultScope: "project",
+    allowedScopePrefixes: ["project"]
+  });
+  try {
+    assert.throws(() => {
+      fx.service.runCommand("save", {
+        memory_updates: [{ scope: "preferences", key: "tone", value: "concise" }]
+      });
+    });
+  } finally {
+    fx.cleanup();
+  }
+});
+
+test("scope policy applies default scope for project instance", () => {
+  const fx = createFixture({
+    instanceName: "project-a",
+    defaultScope: "project",
+    allowedScopePrefixes: ["project"]
+  });
+  try {
+    const result = fx.service.runCommand("save", {
+      memory_updates: [{ key: "milestone", value: "MVP alpha" }]
+    });
+    assert.equal(Number(result.memory_updates_applied), 1);
+    const items = fx.store.listMemory();
+    assert.equal(items[0].scope, "project");
   } finally {
     fx.cleanup();
   }

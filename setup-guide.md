@@ -13,6 +13,8 @@ npm run dev
 
 Server starts at `http://localhost:8787` with Swagger docs at `/docs`.
 
+For central + project isolation setup, see `hybrid-setup.md`.
+
 ## Step 2: Personalize Your Memory Files
 
 Edit the following files and replace placeholders:
@@ -60,6 +62,8 @@ Add to your MCP config:
   }
 }
 ```
+
+Hybrid MCP examples (central / project-a / project-b) are documented in `hybrid-setup.md`.
 
 ## Step 5: Verify Diary Layout
 

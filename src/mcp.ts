@@ -13,7 +13,11 @@ import { SQLiteStore } from "./storage";
 
 const settings = getSettings();
 const store = new SQLiteStore(settings.databasePath);
-const service = new OpenClawService(store);
+const service = new OpenClawService(store, {
+    instanceName: settings.instanceName,
+    defaultScope: settings.defaultScope,
+    allowedScopePrefixes: settings.allowedScopePrefixes
+});
 
 const server = new Server(
     { name: "openmemory", version: "1.0.0" },
@@ -197,7 +201,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 async function main(): Promise<void> {
     const transport = new StdioServerTransport();
     await server.connect(transport);
-    console.error("OpenMemory MCP server running on stdio");
+    const policy = service.getScopePolicy();
+    console.error(
+        `OpenMemory MCP server [${policy.instance_name}] running on stdio (default_scope=${policy.default_scope})`
+    );
 }
 
 void main();

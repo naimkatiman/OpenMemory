@@ -6,7 +6,11 @@ import { SQLiteStore } from "./storage";
 async function start(): Promise<void> {
   const settings = getSettings();
   const store = new SQLiteStore(settings.databasePath);
-  const service = new OpenClawService(store);
+  const service = new OpenClawService(store, {
+    instanceName: settings.instanceName,
+    defaultScope: settings.defaultScope,
+    allowedScopePrefixes: settings.allowedScopePrefixes
+  });
   const app = buildApi(service, store);
 
   const shutdown = async (signal: string): Promise<void> => {
@@ -25,7 +29,9 @@ async function start(): Promise<void> {
 
   try {
     await app.listen({ host: settings.host, port: settings.port });
-    console.log(`OpenClaw running at http://${settings.host}:${settings.port}`);
+    console.log(
+      `OpenClaw [${settings.instanceName}] running at http://${settings.host}:${settings.port}`
+    );
   } catch (error) {
     store.close();
     throw error;
@@ -33,4 +39,3 @@ async function start(): Promise<void> {
 }
 
 void start();
-

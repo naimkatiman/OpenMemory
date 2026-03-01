@@ -40,6 +40,27 @@ npm run dev
 
 Server starts at `http://localhost:8787` — Swagger docs at `http://localhost:8787/docs`
 
+### Hybrid Mode (Central + Project Instances)
+
+Run isolated instances with built-in presets:
+
+```bash
+# central user memory (port 8787)
+npm run dev:central
+
+# project memory instances (ports 8788, 8789)
+npm run dev:project-a
+npm run dev:project-b
+```
+
+See full guide: [hybrid-setup.md](hybrid-setup.md)
+
+Docker variant:
+
+```bash
+docker compose -f docker-compose.hybrid.yml up -d
+```
+
 ### Try It Out
 
 ```bash
@@ -92,6 +113,8 @@ Add to your MCP config (e.g. `~/.cursor/mcp.json` or Claude Code settings):
 ```
 
 Build first: `npm run build`
+
+For hybrid central/project MCP wiring, see [hybrid-setup.md](hybrid-setup.md).
 
 Available MCP tools:
 | Tool | Description |
@@ -185,7 +208,10 @@ Copy `.env.example` to `.env` and adjust:
 |----------|---------|-------------|
 | `OPENCLAW_HOST` | `127.0.0.1` | Server bind address |
 | `OPENCLAW_PORT` | `8787` | Server port |
+| `OPENCLAW_INSTANCE` | `default` | Instance label (e.g. central, project-a) |
 | `OPENCLAW_DB_PATH` | `./runtime/openclaw.db` | SQLite database path |
+| `OPENCLAW_DEFAULT_SCOPE` | `general` | Scope used when update scope is omitted |
+| `OPENCLAW_ALLOWED_SCOPE_PREFIXES` | *(empty)* | Comma-separated allowed scope prefixes |
 | `OPENCLAW_API_KEY` | *(empty)* | API key for auth (set in production) |
 | `OPENCLAW_CORS_ORIGIN` | `*` | CORS allowed origin |
 

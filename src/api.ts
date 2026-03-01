@@ -81,7 +81,13 @@ export function buildApi(service: OpenClawService, store: SQLiteStore): FastifyI
             properties: {
               status: { type: "string" },
               time: { type: "string" },
-              active_profile: { type: "string" }
+              active_profile: { type: "string" },
+              instance_name: { type: "string" },
+              default_scope: { type: "string" },
+              allowed_scope_prefixes: {
+                type: "array",
+                items: { type: "string" }
+              }
             }
           }
         }
@@ -90,7 +96,8 @@ export function buildApi(service: OpenClawService, store: SQLiteStore): FastifyI
     async () => ({
       status: "ok",
       time: new Date().toISOString(),
-      active_profile: store.getActiveProfile()
+      active_profile: store.getActiveProfile(),
+      ...service.getScopePolicy()
     })
   );
 

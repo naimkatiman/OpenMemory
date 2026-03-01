@@ -5,6 +5,9 @@
 __pycache__/
 .venv/
 runtime/*.db
+runtime/**/*.db
+runtime/**/*.db-shm
+runtime/**/*.db-wal
 node_modules/
 dist/
 *.tsbuildinfo

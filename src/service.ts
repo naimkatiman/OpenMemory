@@ -2,6 +2,12 @@ import { SQLiteStore } from "./storage";
 
 type Profile = "primary" | "assistant";
 
+export interface OpenClawServiceOptions {
+  instanceName?: string;
+  defaultScope?: string;
+  allowedScopePrefixes?: string[];
+}
+
 const PROFILE_ALIASES: Record<string, Profile> = {
   primary: "primary",
   assistant: "assistant",
@@ -53,7 +59,47 @@ function resolveStoredProfile(raw: string): Profile {
 }
 
 export class OpenClawService {
-  public constructor(private readonly store: SQLiteStore) { }
+  private readonly instanceName: string;
+  private readonly defaultScope: string;
+  private readonly allowedScopePrefixes: string[];
+
+  public constructor(
+    private readonly store: SQLiteStore,
+    options: OpenClawServiceOptions = {}
+  ) {
+    this.instanceName = (options.instanceName ?? "default").trim() || "default";
+    this.defaultScope = (options.defaultScope ?? "general").trim() || "general";
+    this.allowedScopePrefixes = (options.allowedScopePrefixes ?? [])
+      .map((prefix) => prefix.trim().toLowerCase())
+      .filter(Boolean);
+  }
+
+  private scopeAllowed(scope: string): boolean {
+    if (this.allowedScopePrefixes.length === 0) {
+      return true;
+    }
+    const normalized = scope.trim().toLowerCase();
+    return this.allowedScopePrefixes.some(
+      (prefix) =>
+        normalized === prefix ||
+        normalized.startsWith(`${prefix}.`) ||
+        normalized.startsWith(`${prefix}:`) ||
+        normalized.startsWith(`${prefix}/`) ||
+        normalized.startsWith(`${prefix}-`)
+    );
+  }
+
+  public getScopePolicy(): {
+    instance_name: string;
+    default_scope: string;
+    allowed_scope_prefixes: string[];
+  } {
+    return {
+      instance_name: this.instanceName,
+      default_scope: this.defaultScope,
+      allowed_scope_prefixes: [...this.allowedScopePrefixes]
+    };
+  }
 
   public getProfiles(): {
     active_profile: Profile;
@@ -147,7 +193,7 @@ export class OpenClawService {
           continue;
         }
         updates.push({
-          scope: String(typed.scope ?? "general").trim() || "general",
+          scope: String(typed.scope ?? this.defaultScope).trim() || this.defaultScope,
           key,
           value: String(typed.value ?? "").trim()
         });
@@ -155,10 +201,20 @@ export class OpenClawService {
     } else if (typeof rawUpdates === "object" && rawUpdates !== null) {
       for (const [key, value] of Object.entries(rawUpdates)) {
         updates.push({
-          scope: "general",
+          scope: this.defaultScope,
           key,
           value: String(value ?? "")
         });
+      }
+    }
+
+    if (updates.length > 0 && this.allowedScopePrefixes.length > 0) {
+      const invalidUpdate = updates.find((item) => !this.scopeAllowed(item.scope));
+      if (invalidUpdate) {
+        throw new Error(
+          `Scope "${invalidUpdate.scope}" is not allowed for instance "${this.instanceName}". ` +
+          `Allowed prefixes: ${this.allowedScopePrefixes.join(", ")}`
+        );
       }
     }
 
